@@ -4,5 +4,5 @@ COPY . .
 RUN cargo build --release
 
 FROM debian:buster-slim
-COPY --from=builder /app/target/release/your_app /usr/local/bin/
-CMD ["your_app"]
+COPY --from=builder /app/target/release/learn_async_rust /usr/local/bin/
+CMD ["learn_async_rust"]
