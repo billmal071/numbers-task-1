@@ -1,4 +1,5 @@
 use serde::Deserialize;
+use tracing::info;
 
 #[derive(Deserialize, Debug)]
 struct NumberFact {
@@ -12,12 +13,14 @@ struct NumberFact {
 pub async fn get_number(number: i32) -> Result<String, reqwest::Error> { 
     let client = reqwest::Client::new();
     
-    let result: NumberFact = client.get(format!("http:://numbersapi.com/{number}/trivia?json"))
+    let result: NumberFact = client.get(format!("http://numbersapi.com/{}/trivia?json", number))
         .send()
         .await?
         .json()
         .await?;
-
+    
+    info!("Number fact: {}", result.text);
+    
     Ok(result.text)
 }
 
@@ -33,17 +36,34 @@ pub fn is_prime(n: u64) -> bool {
     true
 }
 
-pub fn is_perfect(n: u64) -> bool {
-    let mut sum = 0;
-    for i in 1..n {
+pub fn is_perfect(num: i32) -> bool {
+    if num <= 0 {
+        return false; // Negative numbers and 0 are not perfect numbers
+    }
+
+    let n = num as u32;
+    if n == 1 {
+        return false; // 1 has no proper divisors other than itself
+    }
+
+    let mut sum = 1; // Start with 1 (smallest proper divisor)
+    let sqrt_n = (n as f64).sqrt() as u32;
+
+    // Check divisors up to sqrt(n)
+    for i in 2..=sqrt_n {
         if n % i == 0 {
-            sum += i;
+            sum += i; // Add divisor `i`
+            let other = n / i;
+            if other != i {
+                sum += other; // Add the paired divisor `n/i`
+            }
         }
     }
-    sum == n
+
+    sum == n // True if sum of proper divisors equals `n`
 }
 
-pub fn is_armstrong(n: u32) -> bool {
+pub fn is_armstrong(n: i32) -> bool {
     let mut digits = Vec::new();
     let mut num = n;
     while num > 0 {
@@ -51,6 +71,6 @@ pub fn is_armstrong(n: u32) -> bool {
         num /= 10;
     }
     let num_digits = digits.len() as u32;
-    let sum: u32 = digits.iter().map(|d| d.pow(num_digits)).sum();
+    let sum: i32 = digits.iter().map(|d| d.pow(num_digits)).sum();
     sum == n
 }
