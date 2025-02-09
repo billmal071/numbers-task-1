@@ -80,7 +80,7 @@ async fn classify_number(query: web::Query<Params>) -> impl Responder {
     let digit_sum = number
         .to_string()
         .chars()
-        .map(|c| c.to_digit(10).unwrap())
+        .map(|c| c.to_digit(10).unwrap_or_default())
         .sum::<u32>();
     if is_armstrong(number) {
         properties.push("armstrong".to_string());
