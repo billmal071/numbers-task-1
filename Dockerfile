@@ -1,6 +1,5 @@
 FROM rust:latest as builder
 
-# update rust (debian?)
 RUN rustup update
 
 # Cache dependencies
@@ -11,12 +10,15 @@ RUN cargo build --release
 
 RUN rm -rf src
 COPY src ./src
-COPY .env ./.env
 RUN cargo build --release
 
 FROM ubuntu:22.04
 
 COPY --from=builder /target/release/learn_async_rust /usr/local/bin/learn_async_rust
+
+ENV RUST_LOG=info
+ENV HOST=localhost
+ENV PORT=8080
 
 EXPOSE 8080
 ENTRYPOINT ["/usr/local/bin/learn_async_rust"]
