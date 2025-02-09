@@ -11,7 +11,7 @@ struct NumberFact {
 }
 
 pub async fn get_number(number: i32) -> Result<String, reqwest::Error> { 
-    let client = reqwest::Client::new();
+    let client = reqwest::Client::builder().use_rustls_tls().build().expect("failed to create client");
     
     let result: NumberFact = client.get(format!("http://numbersapi.com/{}/trivia?json", number))
         .send()
