@@ -11,6 +11,7 @@ RUN cargo build --release
 
 RUN rm -rf src
 COPY src ./src
+COPY .env ./.env
 RUN cargo build --release
 
 FROM ubuntu:22.04
